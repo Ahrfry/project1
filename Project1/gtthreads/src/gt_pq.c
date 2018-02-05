@@ -199,7 +199,7 @@ extern uthread_struct_t *sched_find_best_uthread(kthread_runqueue_t *kthread_run
 
 	if(!(runq->uthread_mask))
 	{ /* No jobs in active. switch runqueue */
-		if(ksched_shared_info.scheduler_type == 1){
+		if(ksched_shared_info.scheduler_type == 0){
 			//need to unlock this part for other kthreads 
 			gt_spin_unlock(&(kthread_runq->kthread_runqlock));
 			
@@ -210,20 +210,22 @@ extern uthread_struct_t *sched_find_best_uthread(kthread_runqueue_t *kthread_run
 				//Need to lock this part so the reality wont change	
 				gt_spin_lock(&(temp_k_runq->kthread_runqlock));
 				
-				if(!(temp_k_runq->active_runq->uthread_mask)){
+				temp_runq = temp_k_runq->active_runq;	
+
+				if(!(temp_runq->uthread_mask)){
 					gt_spin_unlock(&(temp_k_runq->kthread_runqlock));
 					break;
 				}else{
 					//printf("Came here \n");
-					uprio = LOWEST_BIT_SET(temp_k_runq->active_runq->uthread_mask);
-					prioq = &(temp_k_runq->active_runq->prio_array[uprio]);
+					uprio = LOWEST_BIT_SET(temp_runq->uthread_mask);
+					prioq = &(temp_runq->prio_array[uprio]);
 
 					assert(prioq->group_mask);
 					ugroup = LOWEST_BIT_SET(prioq->group_mask);
 
 					u_head = &(prioq->group[ugroup]);
 					u_obj = TAILQ_FIRST(u_head);
-					__rem_from_runqueue(temp_k_runq->active_runq, u_obj);
+					__rem_from_runqueue(temp_runq, u_obj);
 
 					gt_spin_unlock(&(temp_k_runq->kthread_runqlock));			
 					

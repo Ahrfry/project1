@@ -1,25 +1,26 @@
-Thread with weight = 100 and id = 117 is YIELDING  
+Thread with weight = 100 and id = 116 is YIELDING  
 Thread with weight = 100 and id = 124 is YIELDING  
 Thread with weight = 100 and id = 120 is YIELDING  
+Thread with weight = 100 and id = 117 is YIELDING  
 Thread with weight = 100 and id = 125 is YIELDING  
-Thread with weight = 100 and id = 126 is YIELDING  
 Thread with weight = 100 and id = 121 is YIELDING  
-Thread with weight = 100 and id = 127 is YIELDING  
+Thread with weight = 100 and id = 126 is YIELDING  
 Thread with weight = 100 and id = 122 is YIELDING  
+Thread with weight = 100 and id = 127 is YIELDING  
 Thread with weight = 100 and id = 123 is YIELDING  
-weight  25  size  32  mean_total_time        184.00000 stdv_total_time     263714.00169 
-weight  25  size  64  mean_total_time       1401.00000 stdv_total_time     262496.99671 
-weight  25  size 128  mean_total_time      11414.00000 stdv_total_time     252483.99895 
-weight  25  size 256  mean_total_time    1206351.00000 stdv_total_time     942453.00442 
-weight  50  size  32  mean_total_time      11556.00000 stdv_total_time     252342.00132 
-weight  50  size  64  mean_total_time      52731.00000 stdv_total_time     211166.99863 
-weight  50  size 128  mean_total_time      22838.00000 stdv_total_time     241059.99944 
-weight  50  size 256  mean_total_time    1309205.00000 stdv_total_time    1045306.99809 
-weight  75  size  32  mean_total_time      22979.00000 stdv_total_time     240919.00422 
-weight  75  size  64  mean_total_time     100604.00000 stdv_total_time     163294.00273 
-weight  75  size 128  mean_total_time      34218.00000 stdv_total_time     229680.00390 
-weight  75  size 256  mean_total_time     248288.00000 stdv_total_time      15609.99987 
-weight 100  size  32  mean_total_time      34361.00000 stdv_total_time     229536.99707 
-weight 100  size  64  mean_total_time     152574.00000 stdv_total_time     111323.99878 
-weight 100  size 128  mean_total_time      45632.00000 stdv_total_time     218266.00197 
-weight 100  size 256  mean_total_time    1305371.00000 stdv_total_time    1041473.00485 
+weight  25  size  32  mean_total_time       7546.00000 stdv_total_time     491803.00186 
+weight  25  size  64  mean_total_time       1393.00000 stdv_total_time     497955.99664 
+weight  25  size 128  mean_total_time      18981.00000 stdv_total_time     480368.00400 
+weight  25  size 256  mean_total_time    3569224.50000 stdv_total_time    3069875.48937 
+weight  50  size  32  mean_total_time      19127.00000 stdv_total_time     480222.00306 
+weight  50  size  64  mean_total_time      64647.00000 stdv_total_time     434702.00213 
+weight  50  size 128  mean_total_time      38603.00000 stdv_total_time     460746.00573 
+weight  50  size 256  mean_total_time    1793913.00000 stdv_total_time    1294563.97992 
+weight  75  size  32  mean_total_time      38746.00000 stdv_total_time     460602.99789 
+weight  75  size  64  mean_total_time     120632.00000 stdv_total_time     378717.00278 
+weight  75  size 128  mean_total_time      85883.00000 stdv_total_time     413465.99547 
+weight  75  size 256  mean_total_time    1702025.00000 stdv_total_time    1202676.01186 
+weight 100  size  32  mean_total_time      55343.00000 stdv_total_time     444006.00443 
+weight 100  size  64  mean_total_time     180517.00000 stdv_total_time     318832.00602 
+weight 100  size 128  mean_total_time      78808.00000 stdv_total_time     420540.99527 
+weight 100  size 256  mean_total_time    1893287.00000 stdv_total_time    1393937.98336 
