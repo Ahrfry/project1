@@ -173,7 +173,7 @@ extern void uthread_schedule(uthread_struct_t * (*kthread_best_sched_uthread)(kt
 		timeradd(&(u_obj->run_time), &diff, &(u_obj->run_time));
 		
 		//Deduct credits (the which it spent running)/timeslice which is set to 100000
-		float multiplier = ((float)(diff.tv_sec*1000000 + diff.tv_usec))/50000; 
+		float multiplier = ((float)(diff.tv_sec*1000000 + diff.tv_usec))/100000; 
 		u_obj->credit = u_obj->credit - (int)25*multiplier;
 		
 		//printf("testing sumffin: %lu \n" , KTHREAD_VTALRM_USEC);
@@ -231,9 +231,11 @@ extern void uthread_schedule(uthread_struct_t * (*kthread_best_sched_uthread)(kt
 				*/			
 				//if no credit or yield_surplus is positive
 				if(u_obj->credit <= 0){
+					
+					//printf("matrix weight %d ----  credit = %d \n" , u_obj->weight , u_obj->credit);
 					u_obj->credit = u_obj->weight;//restore credits in case in ran out	
-					u_obj->yield_surplus--;// subtract from surplus
 					add_to_runqueue(kthread_runq->expires_runq, &(kthread_runq->kthread_runqlock), u_obj);
+					
 				}else{//Otherwise it still has credits, therefore it gets added to the q
  					if(u_obj->yield_surplus > 0){//instead of going into the active runq it goes to expires
 						u_obj->yield_surplus--;// subtract from surplus
@@ -354,7 +356,7 @@ extern int uthread_create(uthread_t *u_tid, int (*u_func)(void *), void *u_arg, 
 	
 	//setting yield surplus
 	if(weight == 100){
-		u_new->yield_surplus = 1;
+		u_new->yield_surplus = 2;
 	}else{
 			
 		u_new->yield_surplus = -1;

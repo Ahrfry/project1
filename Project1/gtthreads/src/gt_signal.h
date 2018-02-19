@@ -8,7 +8,7 @@ extern void kthread_block_signal(int signo);
 extern void kthread_unblock_signal(int signo);
 
 #define KTHREAD_VTALRM_SEC 0
-#define KTHREAD_VTALRM_USEC 50000 // 30ms
+#define KTHREAD_VTALRM_USEC 100000 // 30ms
 extern void kthread_init_vtalrm_timeslice();
 
 #endif

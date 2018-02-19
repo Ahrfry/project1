@@ -74,6 +74,7 @@ int kthread_create(kthread_t *tid, int (*kthread_start_func)(void *), void *arg)
 	return -1;
 }
 
+
 static int kthread_handler(void *arg)
 {
 #define k_ctx ((kthread_context_t *)arg)
@@ -92,6 +93,8 @@ static int kthread_handler(void *arg)
 	// free(arg);
 	return 0;
 }
+
+
 
 static void kthread_init(kthread_context_t *k_ctx)
 {
@@ -170,6 +173,7 @@ extern kthread_runqueue_t *ksched_find_target(uthread_struct_t *u_obj)
 	{
 		/* How dumb to assume there is atleast one cpu (haha) !! :-D */
 		target_cpu = ((target_cpu + 1) % GT_MAX_CORES);
+		//printf("target cpu %d \n" , target_cpu);
 	} while(!kthread_cpu_map[target_cpu]);
 
 	gt_spin_lock(&(ksched_info->ksched_lock));

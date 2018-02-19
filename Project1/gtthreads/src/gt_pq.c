@@ -176,7 +176,7 @@ extern uthread_struct_t *sched_find_best_uthread(kthread_runqueue_t *kthread_run
 	 * [NOT FOUND] Return NULL(no more jobs)
 	 * [FOUND] Remove uthread from pq and return it. */
 
-	runqueue_t *runq , *temp_runq;
+	runqueue_t *runq, *tmp_kthread_runq;
 	prio_struct_t *prioq;
 	uthread_head_t *u_head;
 	uthread_struct_t *u_obj;
@@ -186,56 +186,65 @@ extern uthread_struct_t *sched_find_best_uthread(kthread_runqueue_t *kthread_run
 
 	runq = kthread_runq->active_runq;
 	
-	kthread_context_t *temp_k_ctx , *current_ctx;
-       	current_ctx = kthread_cpu_map[kthread_apic_id()];
+	/************MY STUFF*********/
+	//Get current k_thread_context
 	
-	kthread_runqueue_t *temp_k_runq;
-	
-	 
+	kthread_context_t *cur_k_ctx, *tmp_k_ctx;
+	cur_k_ctx = kthread_cpu_map[kthread_apic_id()];
 
 	kthread_runq->kthread_runqlock.holder = 0x04;
-
-	
-
 	if(!(runq->uthread_mask))
 	{ /* No jobs in active. switch runqueue */
-		if(ksched_shared_info.scheduler_type == 0){
-			//need to unlock this part for other kthreads 
-			gt_spin_unlock(&(kthread_runq->kthread_runqlock));
-			
-			for(int i = 0; i < 4 && i!= current_ctx->cpuid; i++){
-				// Code extracted from gt_kthread.c line 126	
-				temp_k_ctx = kthread_cpu_map[i];
-				temp_k_runq = &(temp_k_ctx->krunqueue);	
-				//Need to lock this part so the reality wont change	
-				gt_spin_lock(&(temp_k_runq->kthread_runqlock));
+		
+		/*
+		int target_cpu = 0;
+		do
+		{
+			target_cpu = ((target_cpu + 1) % GT_MAX_CORES);
+		} while(!kthread_cpu_map[target_cpu] && (cur_k_ctx->cpuid != target_cpu));
+		
+		
+		printf("target cpu %d \n" , target_cpu);
+		*/
+		if(ksched_shared_info.scheduler_type == 1){
+			int i=0;
 				
-				temp_runq = temp_k_runq->active_runq;	
-
-				if(!(temp_runq->uthread_mask)){
-					gt_spin_unlock(&(temp_k_runq->kthread_runqlock));
-					break;
-				}else{
-					//printf("Came here \n");
-					uprio = LOWEST_BIT_SET(temp_runq->uthread_mask);
-					prioq = &(temp_runq->prio_array[uprio]);
-
-					assert(prioq->group_mask);
-					ugroup = LOWEST_BIT_SET(prioq->group_mask);
-
-					u_head = &(prioq->group[ugroup]);
-					u_obj = TAILQ_FIRST(u_head);
-					__rem_from_runqueue(temp_runq, u_obj);
-
-					gt_spin_unlock(&(temp_k_runq->kthread_runqlock));			
+			while((tmp_k_ctx = kthread_cpu_map[i]) && (i < 16)){
+			       	//So it wont query its own runq
+				if(i != cur_k_ctx->cpuid && !kthread_cpu_map[i]){
+					gt_spin_lock(&(tmp_k_ctx->krunqueue.kthread_runqlock));
 					
-					return(u_obj);
-				}		
-			
-			}		
+					//printf("Came here 1 \n");
+					if(tmp_k_ctx->krunqueue.active_runq->uthread_mask){
+						
+						printf("Came here 2 \n");
+						/* Find the highest priority bucket */
+						uprio = LOWEST_BIT_SET(tmp_k_ctx->krunqueue.active_runq->uthread_mask);
+						prioq = &(tmp_k_ctx->krunqueue.active_runq->prio_array[uprio]);
+
+						assert(prioq->group_mask);
+						ugroup = LOWEST_BIT_SET(prioq->group_mask);
+
+						u_head = &(prioq->group[ugroup]);
+						u_obj = TAILQ_FIRST(u_head);
+						__rem_from_runqueue(tmp_k_ctx->krunqueue.active_runq, u_obj);
+
+						gt_spin_unlock(&(tmp_k_ctx->krunqueue.kthread_runqlock));
+						return(u_obj);			
+					}else{
+						gt_spin_unlock(&(tmp_k_ctx->krunqueue.kthread_runqlock));
+						//break;	
+					}
 					
-		}	
+				
+				}
+
+				i++;
+			}
+
 			
+		}
+		//if it doesnt return till it gets here, it will swap to its expired runq to keep on the balance
 		assert(!runq->uthread_tot);
 		kthread_runq->active_runq = kthread_runq->expires_runq;
 		kthread_runq->expires_runq = runq;
@@ -248,6 +257,7 @@ extern uthread_struct_t *sched_find_best_uthread(kthread_runqueue_t *kthread_run
 			return NULL;
 		}
 	}
+
 	/* Find the highest priority bucket */
 	uprio = LOWEST_BIT_SET(runq->uthread_mask);
 	prioq = &(runq->prio_array[uprio]);

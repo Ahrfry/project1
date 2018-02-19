@@ -105,6 +105,7 @@ static void * uthread_mulmat(void *p)
 #else
 //	fprintf(stderr, "\nThread(id:%d, group:%d) started",ptr->tid, ptr->gid);
 #endif
+	
 	if(ptr->matrix_size == 256){
 		yield_me();
 	}
@@ -156,7 +157,7 @@ int main(int argc, char *argv[])
 	uthread_arg_t *uarg;
 	int inx;
 	
-	int scheduler_type = 1;//atoi(argv[1]);
+	int scheduler_type = atoi(argv[1]);
 	
 	gtthread_app_init(scheduler_type); // passing this information to k_shared_info. In many occasions we need to know the schedule type 
 
@@ -165,7 +166,7 @@ int main(int argc, char *argv[])
 	gettimeofday(&tv1,NULL);
 	
 	int thread_id = 0;// range from 0 to 127
-
+ 	int group_id  = 0;// range from 0 to 15
 
 	//printf("Scheuler type %d \n" , atoi(argv[1]));	
 
@@ -182,12 +183,13 @@ int main(int argc, char *argv[])
 					uarg->matrix_size = size; //Since each thread will have a matrix of its own, might as well save it as an intrinsic attr
 					uarg->tid = thread_id;
 
-					uarg->gid = (thread_id % NUM_GROUPS);		
-					
+					uarg->gid = (thread_id % NUM_GROUPS);//group_id;		
 						
 					uthread_create(&utids[thread_id], uthread_mulmat, uarg, uarg->gid , weight);
 					thread_id++;
 				}
+
+				group_id++;
 			}
 		}
 		
@@ -218,7 +220,6 @@ int main(int argc, char *argv[])
 	gtthread_app_exit();
 
 	/******* HARDCOREEEE STATISTICSSSSSS **************/	
-	
 	float total_time_stats[16];
 	float run_time_stats[16];
 	float total_time_stdv[16];
@@ -244,7 +245,7 @@ int main(int argc, char *argv[])
 			total_time_stdv[group_number] = pow((uthread_arr[i]->total_time.tv_sec*1000000  + uthread_arr[i]->total_time.tv_usec) - total_time_stats[group_number] , 2);	
 			run_time_stdv[group_number] = pow((uthread_arr[i]->run_time.tv_sec*1000000  + uthread_arr[i]->run_time.tv_usec) - run_time_stats[group_number] , 2);
 		}		
-		printf("weight %3d  size %3d  mean_total_time  %15.5f stdv_total_time  %15.5f \n" , uthread_arr[i]->weight, size, total_time_stats[group_number] , sqrt(total_time_stdv[group_number]));
+		printf("%3d     %3d    %15.0f %15.5f %15.0f %15.5f \n" , uthread_arr[i]->weight, size, total_time_stats[group_number] , sqrt(total_time_stdv[group_number]) , run_time_stats[group_number] , sqrt(run_time_stdv[group_number]) );
 		
 		group_number++;
 		if(size <256){
@@ -252,7 +253,7 @@ int main(int argc, char *argv[])
 		}else{
 			size = 32;
 		}		
-		//	printf("thread_id = %d  weight = %d  run time = %lu  total time = %lu\n" , uthread_arr[i]->uthread_tid , uthread_arr[i]->weight, (uthread_arr[i]->run_time.tv_sec*1000000  + uthread_arr[i]->run_time.tv_usec), (uthread_arr[i]->total_time.tv_sec*1000000  + uthread_arr[i]->total_time.tv_usec));
+		//printf("thread_id = %d  weight = %d  run time = %lu  total time = %lu\n" , uthread_arr[i]->uthread_tid , uthread_arr[i]->weight, (uthread_arr[i]->run_time.tv_sec*1000000  + uthread_arr[i]->run_time.tv_usec), (uthread_arr[i]->total_time.tv_sec*1000000  + uthread_arr[i]->total_time.tv_usec));
 	}
 	// print_matrix(&C);
 	// fprintf(stderr, "********************************");
